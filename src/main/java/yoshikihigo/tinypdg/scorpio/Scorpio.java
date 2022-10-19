@@ -210,6 +210,7 @@ public class Scorpio {
 				}
 				pdgArray = pdgs.toArray(new PDG[0]);
 			}
+			//System.out.println("pdgArray "+pdgArray);
 			System.out.print("done: ");
 			final long time2 = System.nanoTime();
 			printTime(time2 - time1);

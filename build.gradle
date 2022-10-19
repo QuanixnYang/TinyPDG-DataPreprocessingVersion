@@ -39,7 +39,10 @@ dependencies {
     
     // https://mvnrepository.com/artifact/org.eclipse.jdt/org.eclipse.jdt.core
     compile group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.core', version: '3.10.0'
-    
-}
 
+    compile 'org.json:json:20190722'
+    compile 'org.apache.maven.plugins:maven-compiler-plugin:3.1'
+    compile 'commons-io:commons-io:2.6'
+    //compile group: 'com.alibaba', name: 'fastjson', version: '1.2.47'
+}
 

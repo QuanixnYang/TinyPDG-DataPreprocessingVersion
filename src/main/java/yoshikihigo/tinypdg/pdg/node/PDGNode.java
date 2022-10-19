@@ -97,6 +97,7 @@ public abstract class PDGNode<T extends ProgramElementInfo> implements
 	public String getText() {
 		final StringBuilder text = new StringBuilder();
 		text.append(this.core.getText());
+		/*
 		text.append(" <");
 		if (this.core.startLine == this.core.endLine) {
 			text.append(this.core.startLine);
@@ -106,6 +107,7 @@ public abstract class PDGNode<T extends ProgramElementInfo> implements
 			text.append(this.core.endLine);
 		}
 		text.append(">");
+		 */
 		return text.toString();
 	}
 }

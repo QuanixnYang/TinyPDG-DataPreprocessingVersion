@@ -1,5 +1,5 @@
 package yoshikihigo.tinypdg.graphviz;
-
+import java.io.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -74,24 +74,6 @@ public class Writer {
 				options.addOption(p);
 			}
 
-			// {
-			// final Option o = new Option("o", "optimize", true,
-			// "remove unnecessary nodes from CFGs and PDGs");
-			// o.setArgName("boolean");
-			// o.setArgs(1);
-			// o.setRequired(false);
-			// options.addOption(o);
-			// }
-
-			// {
-			// final Option a = new Option("a", "atomic", true,
-			// "dissolve complicated statements into simple statements");
-			// a.setArgName("boolean");
-			// a.setArgs(1);
-			// a.setRequired(false);
-			// options.addOption(a);
-			// }
-
 			final CommandLineParser parser = new PosixParser();
 			final CommandLine cmd = parser.parse(options, args);
 
@@ -114,7 +96,7 @@ public class Writer {
 			}
 
 			if (cmd.hasOption("c")) {
-				System.out.println("building and outputing CFGs ...");
+				//System.out.println("building and outputing CFGs ...");
 				final BufferedWriter writer = new BufferedWriter(
 						new FileWriter(cmd.getOptionValue("c")));
 
@@ -138,7 +120,7 @@ public class Writer {
 			}
 
 			if (cmd.hasOption("p")) {
-				System.out.println("building and outputing PDGs ...");
+				//System.out.println("building and outputing PDGs ...");
 				final BufferedWriter writer = new BufferedWriter(
 						new FileWriter(cmd.getOptionValue("p")));
 
@@ -159,10 +141,10 @@ public class Writer {
 				writer.close();
 			}
 
-			System.out.println("successfully finished.");
+			//System.out.println("successfully finished.");
 
 		} catch (Exception e) {
-			System.err.println(e.getMessage());
+			System.err.println("Exception"+e.getMessage());
 			System.exit(0);
 		}
 	}
@@ -182,28 +164,32 @@ public class Writer {
 		writer.newLine();
 
 		final SortedMap<CFGNode<? extends ProgramElementInfo>, Integer> nodeLabels = new TreeMap<CFGNode<? extends ProgramElementInfo>, Integer>();
+		//System.out.println("cfg.getAllNodes()"+(cfg.getAllNodes()).size());/////////////////////////////////////////////////////////////
 		for (final CFGNode<?> node : cfg.getAllNodes()) {
 			nodeLabels.put(node, nodeLabels.size());
 		}
 
-		for (final Map.Entry<CFGNode<? extends ProgramElementInfo>, Integer> entry : nodeLabels
-				.entrySet()) {
+		BufferedWriter cfg_corpus = new BufferedWriter(new FileWriter("./outPut/corpus/cfg_corpus.txt",true));
+		for (final Map.Entry<CFGNode<? extends ProgramElementInfo>, Integer> entry : nodeLabels.entrySet()) {
 
 			final CFGNode<? extends ProgramElementInfo> node = entry.getKey();
+
 			final Integer label = entry.getValue();
 
 			writer.write(Integer.toString(createdGraphNumber));
 			writer.write(".");
 			writer.write(Integer.toString(label));
 			writer.write(" [style = filled, label = \"");
+
+			// 写入文件
+			cfg_corpus.write(node.getText().replace(";"," ").replace("\n", " ")+" ");
+
 			writer.write(node.getText().replace("\"", "\\\"")
 					.replace("\\\\\"", "\\\\\\\""));
 			writer.write("\"");
 
-			final CFGNode<? extends ProgramElementInfo> enterNode = cfg
-					.getEnterNode();
-			final SortedSet<CFGNode<? extends ProgramElementInfo>> exitNodes = cfg
-					.getExitNodes();
+			final CFGNode<? extends ProgramElementInfo> enterNode = cfg.getEnterNode();
+			final SortedSet<CFGNode<? extends ProgramElementInfo>> exitNodes = cfg.getExitNodes();
 
 			if (enterNode == node) {
 				writer.write(", fillcolor = aquamarine");
@@ -222,6 +208,8 @@ public class Writer {
 			writer.write("];");
 			writer.newLine();
 		}
+		cfg_corpus.newLine();
+		cfg_corpus.close();
 
 		writeCFGEdges(cfg, nodeLabels, createdGraphNumber, writer);
 
@@ -244,7 +232,7 @@ public class Writer {
 			edges.addAll(node.getBackwardEdges());
 			edges.addAll(node.getForwardEdges());
 		}
-
+		//System.out.println("cfg.getAllEdges()"+edges.size());/////////////////////////////////////////////////////////////
 		for (final CFGEdge edge : edges) {
 			writer.write(Integer.toString(createdGraphNumber));
 			writer.write(".");
@@ -275,10 +263,11 @@ public class Writer {
 		writer.newLine();
 
 		final Map<PDGNode<?>, Integer> nodeLabels = new HashMap<PDGNode<?>, Integer>();
+		//System.out.println("pdg.getAllNodes()"+(pdg.getAllNodes()).size());/////////////////////////////////////////////////////////////
 		for (final PDGNode<?> node : pdg.getAllNodes()) {
 			nodeLabels.put(node, nodeLabels.size());
 		}
-
+		BufferedWriter pdg_corpus = new BufferedWriter(new FileWriter("./outPut/corpus/pdg_corpus.txt",true));
 		for (final Map.Entry<PDGNode<?>, Integer> entry : nodeLabels.entrySet()) {
 			writer.write(Integer.toString(createdGraphNumber));
 			writer.write(".");
@@ -289,6 +278,9 @@ public class Writer {
 			writer.write("\"");
 
 			final PDGNode<?> node = entry.getKey();
+			// 写入文件
+			pdg_corpus.write(node.getText().replace(";"," ").replace("\n", " ")+" ");
+
 			if (node instanceof PDGMethodEnterNode) {
 				writer.write(", fillcolor = aquamarine");
 			} else if (pdg.getExitNodes().contains(node)) {
@@ -310,7 +302,9 @@ public class Writer {
 			writer.write("];");
 			writer.newLine();
 		}
-
+		pdg_corpus.newLine();
+		pdg_corpus.close();
+		//System.out.println("pdg.getAllEdges()"+(pdg.getAllEdges()).size());/////////////////////////////////////////////////////////////
 		for (final PDGEdge edge : pdg.getAllEdges()) {
 			writer.write(Integer.toString(createdGraphNumber));
 			writer.write(".");

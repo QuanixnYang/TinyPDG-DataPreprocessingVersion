@@ -1,5 +1,4 @@
 TinyPDG
 =======
 
-A library for building intraprocedural PDGs for Java programs
-# Hadoop
+Use TinyPDG to batch generate CFG and PDG from Java files, and train Word2Vec to save the vectorized data of CFG and PDG to JSON files
